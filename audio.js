@@ -23,7 +23,9 @@ export class Sfx{
     this.wv=c.createBufferSource(); this.wv.buffer=nb; this.wv.loop=true; const lf=c.createBiquadFilter(); lf.type='lowpass'; lf.frequency.value=520;
     this.wg=c.createGain(); this.wg.gain.value=0; const lfo=c.createOscillator(); lfo.frequency.value=0.13; const lg=c.createGain(); lg.gain.value=0.5;
     this.wv.connect(lf); lf.connect(this.wg); this.wg.connect(this.sfx); lfo.connect(lg); lg.connect(this.wg.gain); lfo.start(); this.wv.start();
-    // city hum + warning beep gain
+    // police siren
+    this.so=c.createOscillator();this.so.type='sawtooth';const sf=c.createBiquadFilter();sf.type='lowpass';sf.frequency.value=1400;this.sg=c.createGain();this.sg.gain.value=0;
+    this.so.connect(sf);sf.connect(this.sg);this.sg.connect(this.sfx);this.so.start();
     this.startMusic();
   }
   setMuted(m){this.muted=m; if(this.master)this.master.gain.setTargetAtTime(m?0:0.85,this.ctx.currentTime,0.05)}
@@ -37,6 +39,7 @@ export class Sfx{
     this.eg.gain.setTargetAtTime(st.active?(0.07+st.throttle*0.07+r*0.04):0,t,0.1);
     this.skg.gain.setTargetAtTime(st.active?st.skid*0.16:0,t,0.05);
     this.wg.gain.setTargetAtTime(st.sea*0.16,t,0.4);
+    this.so.frequency.setTargetAtTime(760+Math.sin(t*5.5)*260,t,0.02);this.sg.gain.setTargetAtTime((st.siren||0)*0.07,t,0.1);
   }
   tone(freq,dur,type='sine',vol=0.3,when=0,slide=0,dest){
     if(!this.ctx)return; const c=this.ctx,t=c.currentTime+when,o=c.createOscillator(),g=c.createGain();
@@ -49,6 +52,10 @@ export class Sfx{
     s.buffer=this.noise; f.type=type; f.frequency.value=freq; g.gain.setValueAtTime(vol,t); g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
     s.connect(f); f.connect(g); g.connect(this.sfx); s.start(t,Math.random()); s.stop(t+dur+0.05);
   }
+  gun(kind,vol=1){const k={pistol:[.34,2200,.09,230],smg:[.22,2600,.06,260],shotgun:[.5,1100,.2,150],enemy:[.2,1800,.08,200]}[kind]||[.3,2000,.08,220];
+    this.burst(k[2],k[1],k[0]*vol,'highpass');this.burst(k[2]*1.6,700,k[0]*.8*vol,'lowpass');this.tone(k[3],.13,'square',.22*vol,0,-120)}
+  hurt(){this.tone(140,.18,'sawtooth',.25,0,-60);this.burst(.1,400,.2)}
+  dry(){this.tone(900,.04,'square',.1)}
   horn(vol=0.16,pitch=1){this.tone(392*pitch,0.38,'sawtooth',vol);this.tone(494*pitch,0.38,'sawtooth',vol);this.tone(196*pitch,0.38,'square',vol*.5)}
   farHorn(){this.horn(0.05,0.8+Math.random()*0.5)}
   crash(p){p=Math.min(1,p); this.burst(0.25+p*0.3,500+p*600,0.3+p*0.5); this.tone(90,0.25,'sine',0.5*p+0.1,0,-50)}

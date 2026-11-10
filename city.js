@@ -3,7 +3,7 @@ export const XS=[-288,-192,-96,0,96,192,288];
 export const RW=16;
 export const BOUND={x0:-322,x1:340,z0:-340,z1:340};
 export const LM={ // landmark / mission positions
-  arch:{x:-309,z:0}, station:{x:0,z:-144}, vada:{x:-144,z:96}, lighthouse:{x:-309,z:312}
+  arch:{x:-309,z:0}, station:{x:0,z:-144}, vada:{x:-144,z:96}, lighthouse:{x:-309,z:312}, garage:{x:240,z:-222}
 };
 const cellC=i=>XS[i]+48;
 function rng(seed){return()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
@@ -93,10 +93,10 @@ export function buildCity(scene){
   const tree=(x,z)=>{const h=R(3,4.5);cyl(P,x,0.2,z,.3,h*.55,0x5a3d26);dome(P,x,h*.5,z,R(2.2,3),0x3f8f3a);dome(P,x+.8,h*.45,z+.5,1.8,0x4aa046)};
   const sign=(x,y,z,w,h,ry,tex)=>{const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({map:tex,side:THREE.DoubleSide}));m.position.set(x,y,z);m.rotation.y=ry;scene.add(m);signs.push(m);return m};
   const special={};const S_=(i,j,n)=>special[i+','+j]=n;
-  S_(3,1,'station');S_(4,2,'maidan');S_(1,4,'market');S_(2,3,'clock');S_(4,4,'towers');S_(5,4,'towers');S_(5,3,'towers');
+  S_(3,1,'station');S_(4,2,'maidan');S_(1,4,'market');S_(2,3,'clock');S_(4,4,'towers');S_(5,4,'towers');S_(5,3,'towers');S_(5,0,'garage');
   for(let i=0;i<6;i++)for(let j=0;j<6;j++){
     const k=special[i+','+j],cx=cellC(i),cz=cellC(j);
-    if(k==='station'||k==='maidan'||k==='market'||k==='clock')continue;
+    if(k==='station'||k==='maidan'||k==='market'||k==='clock'||k==='garage')continue;
     if(k==='towers'){lots(i,j,(x,z,w,d)=>building(x,z,Math.min(w,24),Math.min(d,24),R(60,115),pick(GLASS)));continue}
     if(i===0){ // art-deco seafront
       for(let s=0;s<3;s++){const z=cz-34+s*23+11.5;building(cx-14,z,28,21,R(18,26),pick(PASTEL));building(cx+17,z,22,20,R(8,11),pick(BOLD))}
@@ -164,6 +164,15 @@ export function buildCity(scene){
     // Vada pav stall by the pickup
     const vx=LM.vada.x,vz=LM.vada.z+10;solid(vx,vz,10,4,.2,3.4,0xd8a24a);for(let a=0;a<5;a++)P.box(vx-4+a*2,3.7,vz,2,.2,6.4,a%2?0xffffff:0xe63946);
     sign(vx,6.4,vz+2.4,10,2.6,0,signTex('VADA PAV',400,104,'#e63946','#fff3c0','garam garam!'));G.box(vx,3.4,vz-1.6,6,.35,.35,0xffe9a0)}
+  // ---- Mafia Garage (5,0): forecourt with parked supercar + hyperbike
+  {const cx=cellC(5),cz=cellC(0);P.flat(cx,.22,cz,70,70,0x6f6f78);
+    for(let k=-3;k<=3;k++)P.flat(cx+k*9,.24,cz+38-14,.4,14,0xf2f2f2);
+    solid(cx,cz-26,58,16,.2,12,0x3c3f4c);P.box(cx,12.2,cz-26,60,1,18,0x1f2028);G.box(cx,6.2,cz-17.8,40,7,.4,0x16171c);
+    for(let k=-3;k<=3;k++)G.box(cx+k*5.5,4,cz-17.7,2.6,.5,.2,k%2?0xff3b6a:0x32e6ff);
+    for(const dx of[-27,27])G.box(cx+dx,13.2,cz-17.6,1.2,1.2,1.2,0xffd166);
+    sign(cx,15.5,cz-17.4,26,6,0,signTex('MAFIA GARAGE',640,150,'#14091f','#ffd166','Toro V12 • Hyper H-Blade'));
+    for(let a=0;a<6;a++){const px=cx-30+a*12;P.box(px,.2,cz+30,.4,3,.4,0x555560);G.box(px,3.2,cz+30,2,.3,.3,0x32e6ff)}
+    palm(cx-33,cz-4,.9);palm(cx+33,cz-4,.9);}
   // ---- Billboards on rooftops
   sign(-60,52,-60,30,11,0,signTex('MAFIA BROTHERS',640,200,'#14091f','#ffd166','Veer • Bunty • Chintu'));
   P.box(-60,30,-60.4,1,42,1,0x555555);
@@ -191,10 +200,10 @@ export function buildCity(scene){
   m.fillStyle='#223';m.fillRect(0,0,MW,MW);m.fillStyle='#2a6a86';m.fillRect(0,0,wx(-322),MW);
   m.fillStyle='#d8c6a0';m.fillRect(wx(-322),wz(-340),26*MS,680*MS);
   m.fillStyle='#4a4756';m.fillRect(wx(-296),wz(-340),636*MS,680*MS);
-  for(let i=0;i<6;i++)for(let j=0;j<6;j++){const k=special[i+','+j];m.fillStyle=k==='maidan'?'#3f7a35':k==='station'?'#8c5a2e':k==='towers'?'#3d4660':'#5d596a';m.fillRect(wx(XS[i]+8),wz(XS[j]+8),80*MS,80*MS)}
+  for(let i=0;i<6;i++)for(let j=0;j<6;j++){const k=special[i+','+j];m.fillStyle=k==='maidan'?'#3f7a35':k==='station'?'#8c5a2e':k==='towers'?'#3d4660':k==='garage'?'#7a3d9a':'#5d596a';m.fillRect(wx(XS[i]+8),wz(XS[j]+8),80*MS,80*MS)}
   m.fillStyle='#a5a3b5';XS.forEach(a=>{m.fillRect(wx(a-8),wz(-296),RW*MS,592*MS);m.fillRect(wx(-296),wz(a-8),592*MS,RW*MS)});
   m.fillStyle='#fff';m.font=`bold ${12*MS}px sans-serif`;m.textAlign='center';
-  const lab=(t,x,z)=>m.fillText(t,wx(x),wz(z));lab('STATION',cellC(3)-8,cellC(1));lab('MAIDAN',cellC(4),cellC(2));lab('BAZAAR',cellC(1),cellC(4));lab('CLOCK',cellC(2),cellC(3)+4);lab('TOWERS',cellC(4),cellC(4));lab('⛩ ARCH',-312,-9);
+  const lab=(t,x,z)=>m.fillText(t,wx(x),wz(z));lab('STATION',cellC(3)-8,cellC(1));lab('MAIDAN',cellC(4),cellC(2));lab('BAZAAR',cellC(1),cellC(4));lab('CLOCK',cellC(2),cellC(3)+4);lab('TOWERS',cellC(4),cellC(4));lab('ARCH',-312,-9);lab('GARAGE',cellC(5),cellC(0));
   const mapInfo={canvas:map,scale:MS,off:350};
   return {colliders,map:mapInfo,animated,update(t){st.offset.set(t*.004,t*.002);animated.boats.forEach((b,i)=>{b.position.y=-.5+Math.sin(t*.8+i)*.18;b.rotation.z=Math.sin(t*.7+i*2)*.04})},signs};
 }

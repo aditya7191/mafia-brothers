@@ -89,3 +89,24 @@ html,body{margin:0;height:100%;overflow:hidden;background:#140c24;font-family:"A
 @media (orientation:portrait){#rotate{display:flex}}
 #loading{position:fixed;inset:0;background:#0b0614;z-index:90;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
 #loading.off{display:none}#loadTxt{color:#ffd166;font-size:14px;letter-spacing:2px}
+
+/* v2: on-foot, combat */
+#look{position:absolute;inset:0;pointer-events:none}
+#hud.foot #look{pointer-events:auto}
+#hpbox{position:absolute;left:calc(1.6vh + env(safe-area-inset-left));top:calc(33.4vh + env(safe-area-inset-top));width:30vh;display:flex;align-items:center;gap:6px;font-size:clamp(9px,2.2vh,13px);text-shadow:0 1px 3px #000}
+#hpbox .bar{flex:1;height:1.8vh;border-color:#fffa}#hpBar{width:100%;background:linear-gradient(90deg,#27d65a,#9cff6a)}#hpBar.low{background:linear-gradient(90deg,#ff3b3b,#ff8a3d)}
+#wanted{font-size:clamp(12px,3.4vh,22px);color:#7aa8ff;letter-spacing:2px;text-shadow:0 0 8px #2a5cff,0 2px 3px #000;min-width:4vh;text-align:right}#wanted.on{animation:pulse .5s infinite}
+#wpn{font-size:clamp(9px,2.3vh,14px);color:#ffe9a8;letter-spacing:1px;margin-bottom:.2vh}
+#dmg{position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 12vh 3vh rgba(255,40,40,.7);opacity:0;transition:opacity .35s}#dmg.on{opacity:1;transition:none}
+#joy{position:absolute;left:calc(4vh + env(safe-area-inset-left));bottom:calc(3vh + env(safe-area-inset-bottom));width:30vh;height:30vh;border-radius:50%;background:radial-gradient(#ffffff22,#00000066);border:3px solid #fff6;display:none;pointer-events:auto}
+#joyKnob{position:absolute;left:50%;top:50%;width:13vh;height:13vh;margin:-6.5vh 0 0 -6.5vh;border-radius:50%;background:radial-gradient(#fff,#ffd166);box-shadow:0 0 12px #000a;pointer-events:none}
+#fbtns{display:none}
+.shoot{right:calc(2vh + env(safe-area-inset-right));bottom:calc(2vh + env(safe-area-inset-bottom));width:27vh;height:27vh;background:radial-gradient(#ff7a5a,#b3201a);font-size:4.6vh}
+.swap{right:calc(31vh + env(safe-area-inset-right));bottom:calc(2vh + env(safe-area-inset-bottom));width:15vh;height:15vh;background:radial-gradient(#ffd166,#c27a00);font-size:5vh;color:#2a1600;text-shadow:none}
+.exit{right:calc(16.5vh + env(safe-area-inset-right));bottom:calc(30vh + env(safe-area-inset-bottom));width:12vh;height:12vh;background:radial-gradient(#b48cff,#4a2aa8);font-size:4vh}
+#hud.foot #pedals,#hud.foot #steer{display:none}
+#hud.foot #joy,#hud.foot #fbtns{display:block}
+#hud.foot #speedo b,#hud.foot #spdu{display:none}
+#hud.foot .exit{right:calc(2vh + env(safe-area-inset-right));bottom:calc(31vh + env(safe-area-inset-bottom))}
+.pb.exit.hide{display:none}.pb.exit.dim{opacity:.4}
+.pb.shoot{position:absolute}.pb.swap{position:absolute}
