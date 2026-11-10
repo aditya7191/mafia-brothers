@@ -1,0 +1,73 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#1b1030"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="icon" href="data:,"><title>MAFIA BROTHERS – by Aditya Solanki</title>
+<link rel="stylesheet" href="style.css">
+</head><body>
+<canvas id="c"></canvas>
+
+<div id="splash" class="scr"><div class="sp1">Aditya Solanki Games</div><div class="sp2">presents</div></div>
+
+<div id="title" class="scr">
+  <div class="tbox">
+    <div class="tag">MUMBAI OPEN CITY DRIVE</div>
+    <h1 class="logo"><span class="l1">MAFIA</span><span class="l2">BROTHERS</span></h1>
+    <div class="trio" id="trio"></div>
+    <button class="btn big" id="btnPlay">▶ PLAY</button>
+    <div class="row"><button class="btn sm" id="btnFree">🌆 Free Roam</button><button class="btn sm" id="btnStory">📖 Kahani</button></div>
+  </div>
+  <div class="credit">Developer: Aditya Solanki</div>
+  <div class="tapnote">Phone ko aada (landscape) rakho</div>
+</div>
+
+<div id="story" class="scr"><div class="card story">
+  <div id="storyArt"></div><div id="storyTxt"></div>
+  <div class="row"><button class="btn sm ghost" id="storySkip">Skip</button><button class="btn" id="storyNext">Aage ▶</button></div>
+</div></div>
+
+<div id="menu" class="scr"><div class="menuwrap">
+  <div class="mhead"><button class="btn sm ghost" id="menuBack">◀ Back</button><h2>MISSION CHUNO</h2><div class="cash" id="menuCash">₹0</div></div>
+  <div id="mlist"></div>
+</div></div>
+
+<div id="brief" class="scr"><div class="briefwrap">
+  <div class="bleft"><div class="btitle" id="bTitle"></div><div class="bsub" id="bSub"></div><div id="bDialog"></div>
+    <div class="bobj" id="bObj"></div></div>
+  <div class="bright"><div class="bchoose">Kaun chalayega?</div><div id="bChars"></div>
+    <div class="row"><button class="btn sm ghost" id="bBack">◀ Back</button><button class="btn" id="bGo">START ▶</button></div></div>
+</div></div>
+
+<div id="hud">
+  <div id="mapwrap"><canvas id="mini"></canvas><div class="mn">N</div></div>
+  <div id="banner"><div id="bnTitle"></div><div id="bnObj"></div><div id="bnRow"><span id="arrow">➤</span><span id="dist"></span><span id="timer"></span></div>
+    <div id="chase"><div id="chaseTxt">PAKDE JAANE KA METER</div><div class="bar"><i id="chaseBar"></i></div></div></div>
+  <div id="topr"><div class="cash" id="hudCash">₹0</div><button class="rb" id="btnMute">🔊</button><button class="rb" id="btnPause">❚❚</button></div>
+  <div id="toast"></div>
+  <div id="speedo"><b id="spd">0</b><small>km/h</small><div id="who"></div></div>
+  <div id="steer"><div class="arr" id="aL">◀</div><div class="arr" id="aR">▶</div></div>
+  <div id="pedals">
+    <div class="pb horn" id="pHorn">📣<small>HORN</small></div>
+    <div class="pb hand" id="pHand">DRIFT<small>HANDBRAKE</small></div>
+    <div class="pb brake" id="pBrake">BRAKE<small>REVERSE</small></div>
+    <div class="pb gas" id="pGas">GAS<small>▲</small></div>
+  </div>
+</div>
+
+<div id="pause" class="scr"><div class="card">
+  <h2>PAUSED</h2>
+  <button class="btn" id="pResume">▶ Resume</button>
+  <button class="btn sm" id="pRestart">↻ Restart</button>
+  <button class="btn sm" id="pSwitch">🔁 Character badlo</button>
+  <div class="row"><button class="btn sm" id="pSound">🔊 Sound: ON</button><button class="btn sm" id="pMusic">🎵 Music: ON</button></div>
+  <button class="btn sm ghost" id="pQuit">✖ Menu</button>
+</div></div>
+
+<div id="result" class="scr"><div class="card res">
+  <h2 id="rTitle"></h2><div id="rStars"></div><div id="rLine"></div><div id="rStats"></div>
+  <div class="row"><button class="btn sm ghost" id="rMenu">Menu</button><button class="btn sm" id="rRetry">↻ Retry</button><button class="btn" id="rNext">Next ▶</button></div>
+</div></div>
+
+<div id="rotate"><div>📱↻</div><p>Phone ko <b>aada (landscape)</b> karo</p></div>
+<div id="loading"><div class="logo small"><span class="l1">MAFIA</span><span class="l2">BROTHERS</span></div><div id="loadTxt">Mumbai ban raha hai…</div></div>
+<script type="module" src="main.js"></script>
+</body></html>
