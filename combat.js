@@ -106,7 +106,7 @@ export class Combat{
     else{pt(g,MM(0x222226),.18,.2,.8,0,.78,0);pt(g,BM(col),.22,.08,.5,0,.9,0)}
     const ring=new THREE.Mesh(new THREE.RingGeometry(.9,1.15,20),new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:.8,side:THREE.DoubleSide,depthWrite:false}));ring.rotation.x=-Math.PI/2;ring.position.y=.1;g.add(ring);
     g.position.set(x,0,z);g.scale.setScalar(1.3);this.scene.add(g);this.pickups.push({type,x,z,mesh:g,wait:0,ttl:ttl||0});}
-  drop(x,z){const n=this.pickups.filter(p=>p.ttl>0).length;if(n>=14){const o=this.pickups.find(p=>p.ttl>0);this.scene.remove(o.mesh);this.pickups.splice(this.pickups.indexOf(o),1)}this.addPickup('cash',x,z,30)}
+  drop(x,z,type='cash'){const n=this.pickups.filter(p=>p.ttl>0).length;if(n>=14){const o=this.pickups.find(p=>p.ttl>0);this.scene.remove(o.mesh);this.pickups.splice(this.pickups.indexOf(o),1)}this.addPickup(type,x,z,30)}
   update(dt,T,t){
     for(const m of this.tr)if(m.visible){m.userData.t-=dt;if(m.userData.t<=0)m.visible=false}
     for(const m of this.sp)if(m.visible){m.userData.t-=dt;m.scale.multiplyScalar(1+dt*7);if(m.userData.t<=0)m.visible=false}

@@ -284,7 +284,30 @@ function playing_(){return state==='hud'&&!paused}
 function heroDead(){if(M&&!M.done){failMission('Health khatam! Dobara try karo 💥');return}
   hero.hp=hero.max;cash=Math.max(0,cash-100);prog.cash=cash;save();teleportGarage();toast('Hospital se wapas! ₹100 kharcha',3000,'bad')}
 combat.onHero=damageHero;
-combat.onKill=e=>{if(Math.random()<.65)combat.drop(e.x,e.z);sfx.checkpoint();if(M&&M.k)M.k.killed++}
+// ---------- random gang ambush (free roam, and driving missions that are not vehOnly/shootout)
+const amb={t:60+Math.random()*60,list:[],car:null,pend:null,active:false,kills:0,skid:0,count:0};
+const onRoad=(x,z)=>Math.abs(x)<300&&Math.abs(z)<300&&(XS.some(k=>Math.abs(x-k)<11)||XS.some(k=>Math.abs(z-k)<11));
+function ambushSpot(T,rmin,rmax){for(let n=0;n<24;n++){const a=Math.random()*6.283,r=rmin+Math.random()*(rmax-rmin),x=T.x+Math.cos(a)*r,z=T.z+Math.sin(a)*r;if(onRoad(x,z))return[x,z]}return null}
+function ambushSpawn(x,z,n){let k=0;for(let i=0;i<n;i++){const a=i/n*6.283+Math.random(),r=1.6+Math.random()*2.2,ex=x+Math.cos(a)*r,ez=z+Math.sin(a)*r;
+  if(!onRoad(ex,ez))continue;const e=combat.spawn(ex,ez,{aggro:75,hp:46});e.amb=true;pushCircle(colliders,e,.6);amb.list.push(e);k++}return k}
+function clearAmbush(){for(const e of amb.list){if(combat.enemies.includes(e)){combat.scene.remove(e.mesh);combat.enemies.splice(combat.enemies.indexOf(e),1)}}amb.list.length=0;amb.pend=null;amb.active=false;
+  if(amb.car){scene.remove(amb.car.mesh);const i=traffic.list.indexOf(amb.car);if(i>=0)traffic.list.splice(i,1);amb.car=null}}
+function startAmbush(type){const T=T_();if(amb.active||combat.alive()>5)return false;if(amb.car)clearAmbush();
+  if(type==='car'){ // a gang car screeches in ahead of the player and stops; gang hops out
+    const ax=Math.abs(T.x-XS[nearIdx(T.x)])<Math.abs(T.z-XS[nearIdx(T.z)])?'z':'x',idx=nearIdx(ax==='z'?T.x:T.z),pa=ax==='z'?T.z:T.x,dir=Math.random()<.5?1:-1,along=Math.max(-280,Math.min(280,pa-dir*(36+Math.random()*8)));
+    const v=traffic.spawn('rival',{axis:ax,dir,idx,along,chaser:true});v.chaseFn=()=>0;v.v=17;v.ghost=0;amb.car=v;amb.pend={t:1.0};amb.skid=1;sfx.farHorn()}
+  else{const sp=ambushSpot(T,24,38);if(!sp)return false;if(!ambushSpawn(sp[0],sp[1],2+Math.floor(Math.random()*3)))return false}
+  amb.active=true;amb.count++;toast('Gang aa gayi! 🔫',2800,'bad');sfx.fail&&0;return true}
+const nearIdx=t=>{let b=0;for(let i=1;i<7;i++)if(Math.abs(XS[i]-t)<Math.abs(XS[b]-t))b=i;return b};
+function updateAmbush(dt,playing){const T=T_();amb.skid=Math.max(0,amb.skid-dt*.8);
+  if(amb.pend){amb.pend.t-=dt;if(amb.pend.t<=0&&amb.car){const v=amb.car;amb.pend=null;if(!ambushSpawn(v.x,v.z,3+Math.floor(Math.random()*2))&&!amb.list.length){clearAmbush()}else sfx.click()}}
+  for(let i=amb.list.length-1;i>=0;i--){const e=amb.list[i];if(!combat.enemies.includes(e)){amb.list.splice(i,1);continue}if(!e.dead&&Math.hypot(e.x-T.x,e.z-T.z)>115){combat.scene.remove(e.mesh);combat.enemies.splice(combat.enemies.indexOf(e),1);amb.list.splice(i,1)}}
+  if(amb.active&&!amb.pend&&!amb.list.length&&!amb.car)amb.active=false;
+  if(amb.car&&!amb.pend&&(Math.hypot(amb.car.x-T.x,amb.car.z-T.z)>130||(!amb.list.length&&Math.hypot(amb.car.x-T.x,amb.car.z-T.z)>45))){clearAmbush()}
+  if(!playing){return}
+  const ok=mode==='free'||(mode==='mission'&&M&&!M.done&&!M.def.vehOnly&&!M.def.arm&&!M.def.chase);
+  amb.t-=dt;if(amb.t<=0){amb.t=60+Math.random()*60;if(ok&&hero.hp>0&&(mode==='free'||Math.random()<.45))startAmbush(Math.random()<.5?'car':'alley')}}
+combat.onKill=e=>{if(e.amb){combat.drop(e.x,e.z);if(Math.random()<.6)combat.drop(e.x+1.2,e.z+.8,'ammo');amb.kills++;if(!amb.list.some(q=>q!==e&&!q.dead)&&amb.active){amb.active=false;toast('Gang bhaag gayi! 💵 Cash & ammo utha lo',2400,'good')}}else if(Math.random()<.65)combat.drop(e.x,e.z);sfx.checkpoint();if(M&&M.k&&!e.amb)M.k.killed++}
 function spawnAdda(){const cx=144,cz=-48;for(let i=0;i<4;i++){const a=i/4*6.28+Math.random(),r=12+Math.random()*10;combat.spawn(cx+Math.cos(a)*r,cz+Math.sin(a)*r,{aggro:36})}}
 // ---------- missions
 let chaser=null;
@@ -298,7 +321,7 @@ const HINTS=[
  ['t>26','📣 HORN dabao — aage ka traffic side ho jayega'],
  ['t>38','🟡 DRIFT (handbrake) dabake mod tez kato']];
 function startMission(def,ch){
-  paused=false;removeChaser();combat.clear();clearPolice();resetGarage();joy.x=joy.y=0;
+  paused=false;removeChaser();clearAmbush();combat.clear();clearPolice();resetGarage();joy.x=joy.y=0;
   M={def,step:0,t:0,left:def.time,done:false,meter:0,peak:0,hint:0,hintT:0,fail:null,k:null};mode='mission';
   pl.foot=false;setChar(ch,true);setVehicle(def.veh||CHARS[ch].id);pl.mesh.visible=true;hero.hp=hero.max;if(def.arm){hero.weapons.pistol=true;hero.ammo.pistol=Math.max(hero.ammo.pistol,40)}
   hero.weapons.blaster=!!def.blaster;if(def.blaster){hero.ammo.blaster=def.blaster;hero.cur='blaster'}else if(hero.cur==='blaster')hero.cur='pistol';
@@ -332,7 +355,7 @@ function endMission(win){if(M.done)return;M.done=true;marker.visible=false;setPe
     if(d.blaster&&!prog.blaster){prog.blaster=true;setTimeout(()=>toast('⚡ Brothers Blaster Free Roam mein unlock ho gaya!',3600,'good'),1400)}
     const idx=MISSIONS.indexOf(d);prog.unlocked=Math.max(prog.unlocked,idx+2);const b=prog.best[d.id]||{stars:0,time:0};if(stars>=b.stars){prog.best[d.id]={stars,time:Math.round(M.t)}}save();sfx.win()}
   else sfx.fail();
-  setTimeout(()=>{combat.clear();clearPolice();
+  setTimeout(()=>{clearAmbush();combat.clear();clearPolice();
     $('rTitle').textContent=win?'MISSION PASSED! 🎉':'MISSION FAILED 😕';$('rTitle').style.color=win?'#7CFC8A':'#ff6b6b';
     $('rStars').textContent=win?'★'.repeat(stars)+'☆'.repeat(3-stars):'☆☆☆';
     $('rLine').textContent=win?d.win.map(w=>CHARS.find(c=>c.id===w[0]).name+': '+w[1]).join('  '):M.fail||'Phir try karo!';
@@ -340,7 +363,7 @@ function endMission(win){if(M.done)return;M.done=true;marker.visible=false;setPe
     $('rNext').style.display=win&&MISSIONS.indexOf(d)<MISSIONS.length-1?'':'none';
     mode='result';show('result')},900)}
 function failMission(why){if(M&&!M.done){M.fail=why;toast(why,2400,'bad');endMission(false)}}
-function startFree(){removeChaser();combat.clear();clearPolice();resetGarage();M=null;mode='free';marker.visible=false;setPerson(0,0,0,0,false);pl.foot=false;setChar(pl.ch,true);if(!pl.mesh)setVehicle(CHARS[pl.ch].id);pl.mesh.visible=true;hero.hp=hero.max;hero.ammo.pistol=Math.max(hero.ammo.pistol,30);hero.weapons.blaster=!!prog.blaster;if(prog.blaster)hero.ammo.blaster=Math.max(hero.ammo.blaster,16);else if(hero.cur==='blaster')hero.cur='pistol';placePlayer({x:-192,z:-96,th:Math.PI/2});hudMode();show('hud');$('chase').classList.remove('on');
+function startFree(){removeChaser();clearAmbush();combat.clear();clearPolice();resetGarage();M=null;mode='free';marker.visible=false;setPerson(0,0,0,0,false);pl.foot=false;setChar(pl.ch,true);if(!pl.mesh)setVehicle(CHARS[pl.ch].id);pl.mesh.visible=true;hero.hp=hero.max;hero.ammo.pistol=Math.max(hero.ammo.pistol,30);hero.weapons.blaster=!!prog.blaster;if(prog.blaster)hero.ammo.blaster=Math.max(hero.ammo.blaster,16);else if(hero.cur==='blaster')hero.cur='pistol';placePlayer({x:-192,z:-96,th:Math.PI/2});hudMode();show('hud');$('chase').classList.remove('on');
   $('bnTitle').textContent='🌆 FREE ROAM';$('bnObj').textContent='Maidan • Mafia Garage • Sea Gate Arch';$('arrow').style.visibility='hidden';$('dist').textContent='';$('timer').textContent='';addaT=0;spawnAdda();
   toast('Free Roam: EXIT se paidal, Mafia Garage mein Toro V12 aur Hyper H-Blade! Pause mein gaadi badlo',4200)}
 function updateMission(dt){
@@ -420,7 +443,7 @@ $('menuBack').onclick=()=>{sfx.click();toTitle()};
 $('btnPlay').onclick=()=>{sfx.click();if(!prog.storySeen)showStory();else openMenu()};
 $('btnStory').onclick=()=>{sfx.click();showStory()};
 $('btnFree').onclick=()=>{sfx.click();startFree()};
-function toTitle(){mode='title';removeChaser();combat.clear();clearPolice();M=null;pl.foot=false;hudMode();show('title')}
+function toTitle(){mode='title';removeChaser();clearAmbush();combat.clear();clearPolice();M=null;pl.foot=false;hudMode();show('title')}
 function pause(on){if(state!=='hud'&&state!=='pause')return;paused=on;if(on){inp.l=inp.r=inp.gas=inp.brake=inp.hand=inp.shoot=0;joy.x=joy.y=0;$('pSwitch').style.display=mode==='free'?'':'none';$('pVeh').style.display=mode==='free'?'':'none';$('pGar').style.display=mode==='free'?'':'none';$('pVeh').textContent='🚘 Gaadi: '+VEH[pl.kind].name+' (badlo)';$('pRestart').style.display=mode==='mission'?'':'none';show('pause');$('hud').classList.add('on')}else{show('hud')}}
 $('btnPause').onclick=()=>{sfx.click();pause(true)};$('pResume').onclick=()=>{sfx.click();pause(false)};
 $('pRestart').onclick=()=>{sfx.click();const d=M.def,c=pl.ch;startMission(d,c)};
@@ -453,7 +476,7 @@ function frame(now){
     peds.update(dt,T,pedVeh,gtime);
     combat.update(dt,{x:T.x,z:T.z,aim:pl.foot?fp.aim:null,armor:pl.foot?1:.5},gtime);
     for(const t of combat.collect({x:T.x,z:T.z,pr:pl.foot?2.8:3.6}))giveItem(t);
-    updateWanted(dt);
+    updateWanted(dt);updateAmbush(dt,true);
     if(mode==='mission'&&M)updateMission(dt);
     if(mode==='free'){if(combat.alive()===0){addaT+=dt;if(addaT>45){addaT=0;spawnAdda()}}}
     updateHud(dt);followCam(dt)}
@@ -476,8 +499,8 @@ function frame(now){
   renderer.render(scene,camera);
   if(playing&&((frameN++)&1))drawMini();
   const ratio=Math.abs(pl.speed)/pl.P.maxS,Tt=T_();
-  sfx.update({ratio,throttle:playing&&inp.gas&&!pl.foot?1:0,skid:pl.skid*(playing?1:0),sea:clamp(1-(Tt.x+322)/260,0,1),active:playing&&!pl.foot,siren:playing&&W.cars.length?clamp(1-(W.minD||200)/160,0,1):0});
+  sfx.update({ratio,throttle:playing&&inp.gas&&!pl.foot?1:0,skid:Math.max(pl.skid*(playing?1:0),amb.car&&amb.skid>0&&playing?amb.skid:0),sea:clamp(1-(Tt.x+322)/260,0,1),active:playing&&!pl.foot,siren:playing&&W.cars.length?clamp(1-(W.minD||200)/160,0,1):0});
 }
 resize();
-window.__mb={peds,carjack,Q,sun,renderer,scene,setEnv,get night(){return night},setQuality:(q)=>{Q.locked=true;Q.shadows=q!=='low';sun.castShadow=Q.shadows;Q.pr=q==='low'?1:Math.min(window.devicePixelRatio||1,1.5);renderer.setPixelRatio(Q.pr);resize()},get state(){return state},get mode(){return mode},get M(){return M},pl,fp,hero,inp,joy,traffic,combat,W,parked,MISSIONS,CHARS,VEH,prog,camera,setLeft:t=>{if(M)M.left=t},startMission,startFree,openMenu,show,get paused(){return paused},get cash(){return cash},colliders,failMission,get chaser(){return chaser},toggleVehicle,chooseVehicle,teleportGarage,addHeat,exitVehicle,nearParked,cam,giveItem};
+window.__mb={amb,startAmbush,updateAmbush,peds,carjack,Q,sun,renderer,scene,setEnv,get night(){return night},setQuality:(q)=>{Q.locked=true;Q.shadows=q!=='low';sun.castShadow=Q.shadows;Q.pr=q==='low'?1:Math.min(window.devicePixelRatio||1,1.5);renderer.setPixelRatio(Q.pr);resize()},get state(){return state},get mode(){return mode},get M(){return M},pl,fp,hero,inp,joy,traffic,combat,W,parked,MISSIONS,CHARS,VEH,prog,camera,setLeft:t=>{if(M)M.left=t},startMission,startFree,openMenu,show,get paused(){return paused},get cash(){return cash},colliders,failMission,get chaser(){return chaser},toggleVehicle,chooseVehicle,teleportGarage,addHeat,exitVehicle,nearParked,cam,giveItem};
 requestAnimationFrame(t=>{last=t;$('loading').classList.add('off');$('splash').classList.add('on');state='splash';setTimeout(endSplash,2500);frame(t)});

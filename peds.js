@@ -30,12 +30,12 @@ export class Peds{
       const idx=pick(cand),side=Math.random()<.5?1:-1,along=Math.max(-284,Math.min(284,ac+rr(-130,130)));
       if(near(along,12))continue;const lat=XS[idx]+side*LINE,x=ax==='x'?along:lat,z=ax==='x'?lat:along;
       if(Math.hypot(x-P.x,z-P.z)<32)continue;
-      Object.assign(p,{on:true,x,z,ax,idx,side,dir:Math.random()<.5?1:-1,state:'walk',stT:0,fall:0,fixed:-1,sp:rr(1.5,2.3),th:0});this.paint(p);return p}
+      Object.assign(p,{on:true,dodge:Math.random()<.5,x,z,ax,idx,side,dir:Math.random()<.5?1:-1,state:'walk',stT:0,fall:0,fixed:-1,sp:rr(1.5,2.3),th:0});this.paint(p);return p}
     return null}
   spawnAt(x,z,state='flee',away){const p=this.free();if(!p)return null;
     // nearest sidewalk line
     let best=1e9,bi=0,bax='x',bs=1;for(let i=0;i<7;i++)for(const s of[-1,1]){const dz=Math.abs(z-(XS[i]+s*LINE)),dx=Math.abs(x-(XS[i]+s*LINE));if(dz<best){best=dz;bi=i;bax='x';bs=s}if(dx<best){best=dx;bi=i;bax='z';bs=s}}
-    Object.assign(p,{on:true,x,z,ax:bax,idx:bi,side:bs,dir:1,state,stT:5,fall:0,fixed:-1,sp:2,th:0});this.paint(p);if(state==='flee')this.fleeFrom(p,away?away[0]:x+rr(-3,3),away?away[1]:z+rr(-3,3));return p}
+    Object.assign(p,{on:true,dodge:Math.random()<.5,x,z,ax:bax,idx:bi,side:bs,dir:1,state,stT:5,fall:0,fixed:-1,sp:2,th:0});this.paint(p);if(state==='flee')this.fleeFrom(p,away?away[0]:x+rr(-3,3),away?away[1]:z+rr(-3,3));return p}
   fleeFrom(p,tx,tz){if(p.state==='down')return;const a=p.ax==='x'?p.x:p.z,ta=p.ax==='x'?tx:tz;p.dir=a>=ta?1:-1;p.state='flee';p.stT=rr(4,7);if(p.fixed>=0)p.fixed=-1}
   alarm(x,z,r=42){for(const p of this.list){if(!p.on||p.state==='down')continue;const d=Math.hypot(p.x-x,p.z-z);if(d<r)this.fleeFrom(p,x,z)}}
   knock(p){if(p.state==='down')return;p.state='down';p.fall=0}
@@ -46,7 +46,7 @@ export class Peds{
   update(dt,P,veh,tm){this.t=tm!==undefined?tm:this.t+dt;
     // landmark loiterers (activate near the player)
     for(let g=0;g<LAND.length;g++){const L=LAND[g],d=Math.hypot(L[0]-P.x,L[1]-P.z);
-      if(!this.landAct[g]&&d<105){let n=0;for(let k=0;k<3;k++){const p=this.free();if(!p)break;const a=k*2.1+Math.random(),r=rr(2.2,5);Object.assign(p,{on:true,x:L[0]+Math.cos(a)*r,z:L[1]+Math.sin(a)*r,state:'idle',stT:999,fall:0,fixed:g,home:[L[0],L[1]],th:Math.random()*6,ax:'x',idx:3,side:1,dir:1});this.paint(p);n++}this.landAct[g]=true}
+      if(!this.landAct[g]&&d<105){let n=0;for(let k=0;k<3;k++){const p=this.free();if(!p)break;const a=k*2.1+Math.random(),r=rr(2.2,5);Object.assign(p,{on:true,dodge:Math.random()<.5,x:L[0]+Math.cos(a)*r,z:L[1]+Math.sin(a)*r,state:'idle',stT:999,fall:0,fixed:g,home:[L[0],L[1]],th:Math.random()*6,ax:'x',idx:3,side:1,dir:1});this.paint(p);n++}this.landAct[g]=true}
       else if(this.landAct[g]&&d>175){for(const p of this.list)if(p.fixed===g)p.on=false;this.landAct[g]=false}}
     // recycle / respawn walkers around the player (budget: 2 per frame)
     let budget=2;const walkers=this.list.filter(p=>p.on&&p.fixed<0).length;
@@ -62,10 +62,12 @@ export class Peds{
   step(p,dt,P,veh){
     if(p.state==='down'){p.fall+=dt;return}
     // threats: player vehicle and moving traffic
-    if(p.state!=='flee'){
-      for(const v of veh){const sp=Math.abs(v.speed!==undefined?v.speed:v.v);if(sp<4)continue;const rx=p.x-v.x,rz=p.z-v.z;if(Math.abs(rx)>9||Math.abs(rz)>9)continue;
-        const fx=Math.sin(v.th),fz=Math.cos(v.th),a=-(rx*fx+rz*fz)*-1,l=Math.abs(rx*fz-rz*fx);const ahead=rx*fx+rz*fz;
-        if(ahead>-1&&ahead<7.5&&l<2.4){if(v.isPlayer&&ahead<(v.half||2.2)+.6&&l<(v.isBike?1.1:1.5)&&sp>5){this.knock(p);if(this.onHit)this.onHit(p,'car');return}this.fleeFrom(p,v.x,v.z)}}}
+    for(const v of veh){const sp=Math.abs(v.speed!==undefined?v.speed:v.v);if(sp<4)continue;const rx=p.x-v.x,rz=p.z-v.z;if(Math.abs(rx)>9||Math.abs(rz)>9)continue;
+      const fx=Math.sin(v.th),fz=Math.cos(v.th),l=Math.abs(rx*fz-rz*fx),ahead=rx*fx+rz*fz,hf=v.half||2.2;
+      // run-over: any pedestrian caught in front of the player's moving vehicle goes down (even ones that were fleeing)
+      if(v.isPlayer&&sp>5&&ahead>-hf*.5&&ahead<hf+.5&&l<(v.isBike?.9:1.5)){this.knock(p);if(this.onHit)this.onHit(p,'car');return}
+      // only some pedestrians notice and dodge in time
+      if(p.state!=='flee'&&p.dodge&&ahead>-1&&ahead<7.5&&l<2.4)this.fleeFrom(p,v.x,v.z)}
     if(p.state==='idle'&&p.fixed>=0){p.walk+=dt*.4;p.th+=Math.sin(this.t*.6+p.i)*dt*.3;return}
     const ax=p.ax,dir=p.dir;let along=ax==='x'?p.x:p.z,lat=ax==='x'?p.z:p.x;const line=XS[p.idx]+p.side*LINE;
     let sp=p.state==='flee'?5.3:p.sp;
