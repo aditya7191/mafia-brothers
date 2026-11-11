@@ -11,30 +11,30 @@ function shadow(p,w,l){if(!shadowTex){const c=document.createElement('canvas');c
   const m=new THREE.Mesh(new THREE.PlaneGeometry(w,l),new THREE.MeshBasicMaterial({map:shadowTex,transparent:true,depthWrite:false}));m.rotation.x=-Math.PI/2;m.position.y=.1;p.add(m)}
 const lights=(g,w,y,zf,zb)=>{part(g,GL(0xfff4c0),.45,.22,.12,-w,y,zf);part(g,GL(0xfff4c0),.45,.22,.12,w,y,zf);part(g,GL(0xff2a2a),.4,.2,.12,-w,y,zb);part(g,GL(0xff2a2a),.4,.2,.12,w,y,zb)};
 export const SPEC={ // circles along z (centre offset, radius), half-length, cruise speed
-  veer:{c:[[1.15,1.05],[-1.15,1.05]],half:2.2},bunty:{c:[[1.3,1.18],[-1.3,1.18]],half:2.4},chintu:{c:[[1,.95],[-1,.95]],half:1.9},
+  aditya:{c:[[1.15,1.05],[-1.15,1.05]],half:2.2},pravin:{c:[[1.3,1.18],[-1.3,1.18]],half:2.4},deep:{c:[[1,.95],[-1,.95]],half:1.9},
   taxi:{c:[[1.15,1.05],[-1.15,1.05]],half:2.2,cruise:9},sedan:{c:[[1.15,1.05],[-1.15,1.05]],half:2.2,cruise:10.5},
   bus:{c:[[3.2,1.4],[0,1.4],[-3.2,1.4]],half:4.8,cruise:7},auto:{c:[[.7,.85],[-.7,.85]],half:1.5,cruise:8},rival:{c:[[1.2,1.1],[-1.2,1.1]],half:2.3,cruise:20},
   toro:{c:[[1.35,1.05],[-1.35,1.05]],half:2.45},hblade:{c:[[.85,.5],[-.85,.5]],half:1.2},police:{c:[[1.15,1.05],[-1.15,1.05]],half:2.3,cruise:20}};
 export const VEH={
-  veer:{name:'Veer ki Hatchback',phys:{maxS:28,acc:11,steer:1.75,mass:1.0,grip:8},cam:[8.5,3.8]},
-  bunty:{name:'Bunty ki SUV',phys:{maxS:25,acc:10,steer:1.5,mass:1.7,grip:9},cam:[9.2,4.2]},
-  chintu:{name:'Chintu ki Compact',phys:{maxS:30,acc:13,steer:2.05,mass:0.8,grip:7},cam:[8,3.6]},
+  aditya:{name:'Aditya ki Hatchback',phys:{maxS:28,acc:11,steer:1.75,mass:1.0,grip:8},cam:[8.5,3.8]},
+  pravin:{name:'Pravin ki SUV',phys:{maxS:25,acc:10,steer:1.5,mass:1.7,grip:9},cam:[9.2,4.2]},
+  deep:{name:'Deep ki Compact',phys:{maxS:30,acc:13,steer:2.05,mass:0.8,grip:7},cam:[8,3.6]},
   toro:{name:'Toro V12',phys:{maxS:34,acc:14,steer:1.6,mass:1.3,grip:7.5},cam:[9.6,3.5]},
   hblade:{name:'Hyper H-Blade',phys:{maxS:38,acc:17,steer:1.9,mass:0.6,grip:14,bike:true},cam:[6.6,2.7],bike:true}};
 function wedge(pts,depth,hex,x=0){const sh=new THREE.Shape();pts.forEach((p,i)=>i?sh.lineTo(p[0],p[1]):sh.moveTo(p[0],p[1]));
   const g=new THREE.ExtrudeGeometry(sh,{depth,bevelEnabled:false});g.translate(0,0,-depth/2);g.rotateY(-Math.PI/2);g.translate(x,0,0);return new THREE.Mesh(g,typeof hex==='number'?M(hex):hex)}
 export function buildModel(kind,opt={}){
   const g=new THREE.Group();
-  if(kind==='veer'){ // red hatchback with white stripe
+  if(kind==='aditya'){ // red hatchback with white stripe
     part(g,M(0xe63946),2,.62,4.1,0,.62,0);part(g,M(0xe63946),1.9,.2,1.1,0,.98,1.35);part(g,M(0x1e2a38),1.76,.62,2.1,0,1.2,-.35);part(g,M(0xe63946),1.82,.1,2.2,0,1.54,-.35);
     part(g,M(0xffffff),.35,.04,4.1,.3,.95,0);part(g,M(0xffffff),.35,.04,4.1,-.3,.95,0);part(g,M(0xffffff),.35,.02,2.2,.3,1.6,-.35);part(g,M(0xffffff),.35,.02,2.2,-.3,1.6,-.35);
     part(g,M(0x222228),2.05,.28,.3,0,.42,2.05);part(g,M(0x222228),2.05,.28,.3,0,.42,-2.05);part(g,M(0xe63946),1.9,.08,.6,0,1.66,-1.7);
     [[-1.02,1.3],[1.02,1.3],[-1.02,-1.3],[1.02,-1.3]].forEach(([x,z])=>wheel(g,x,.4,z,.4,.3));lights(g,.7,.72,2.06,-2.06);shadow(g,2.8,5.2)}
-  else if(kind==='bunty'){ // blue SUV
+  else if(kind==='pravin'){ // blue SUV
     part(g,M(0x2a6fdb),2.2,.85,4.5,0,.85,0);part(g,M(0x1e2a38),2.02,.75,2.9,0,1.62,-.35);part(g,M(0x2a6fdb),2.08,.12,3,0,2.05,-.35);
     part(g,M(0x222228),2.1,.12,2.4,0,2.16,-.35);part(g,M(0x222228),2.3,.4,.4,0,.55,2.3);part(g,M(0x222228),2.3,.4,.3,0,.55,-2.3);part(g,M(0xffcc00),.3,.08,4.5,0,1.3,0);
     [[-1.12,1.45],[1.12,1.45],[-1.12,-1.45],[1.12,-1.45]].forEach(([x,z])=>wheel(g,x,.52,z,.52,.4));lights(g,.8,.95,2.26,-2.26);shadow(g,3,5.5)}
-  else if(kind==='chintu'){ // green compact
+  else if(kind==='deep'){ // green compact
     part(g,M(0x29b765),1.8,.58,3.5,0,.55,0);part(g,M(0x1e2a38),1.62,.6,1.9,0,1.1,-.2);part(g,M(0x29b765),1.66,.1,2,0,1.43,-.2);part(g,M(0xffffff),.5,.02,2,0,1.49,-.2);
     part(g,M(0x222228),1.85,.2,.3,0,.4,1.75);part(g,M(0x222228),1.5,.08,.6,0,1.5,-1.5);part(g,M(0x222228),.1,.3,.1,.6,1.34,-1.5);part(g,M(0x222228),.1,.3,.1,-.6,1.34,-1.5);
     [[-.92,1.1],[.92,1.1],[-.92,-1.1],[.92,-1.1]].forEach(([x,z])=>wheel(g,x,.36,z,.36,.26));lights(g,.6,.62,1.76,-1.76);shadow(g,2.6,4.4)}

@@ -174,7 +174,7 @@ export function buildCity(scene){
     for(let a=0;a<6;a++){const px=cx-30+a*12;P.box(px,.2,cz+30,.4,3,.4,0x555560);G.box(px,3.2,cz+30,2,.3,.3,0x32e6ff)}
     palm(cx-33,cz-4,.9);palm(cx+33,cz-4,.9);}
   // ---- Billboards on rooftops
-  sign(-60,52,-60,30,11,0,signTex('MAFIA BROTHERS',640,200,'#14091f','#ffd166','Veer • Bunty • Chintu'));
+  sign(-60,52,-60,30,11,0,signTex('MAFIA BROTHERS',640,200,'#14091f','#ffd166','Aditya • Pravin • Deep'));
   P.box(-60,30,-60.4,1,42,1,0x555555);
   sign(100,44,150,22,9,Math.PI/2,signTex('MUMBAI CHAI',512,200,'#7a3b12','#ffe9a8','garam chai, fresh!'));
   sign(-180,26,-60,18,7,Math.PI,signTex('MARINE VIEW',512,200,'#0e4d64','#bff0ff','sea facing flats'));

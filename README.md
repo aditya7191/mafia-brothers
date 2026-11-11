@@ -1,7 +1,7 @@
 # MAFIA BROTHERS
 
 Mumbai-inspired open-city action-driving game for phones (landscape, touch).
-Three friends – Veer, Bunty and Chintu – drive and walk around an original Mumbai-like city, shoot it out with a rival gang (arcade, no gore) and race a supercar and a hyperbike.
+Three friends – Aditya, Pravin and Deep – drive and walk around an original Mumbai-like city, shoot it out with a rival gang (arcade, no gore) and race a supercar and a hyperbike.
 
 Developer: Aditya Solanki
 

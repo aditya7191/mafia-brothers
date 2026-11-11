@@ -32,7 +32,7 @@ const traffic=new Traffic(scene,rnd);
 const GAR={x:235,z:-203};
 const STY=[{jacket:0xd62828,pants:0x23283d,skin:0xc88a5c,hair:'spiky'},{jacket:0x1d4e89,pants:0x23283d,skin:0xb57750,hair:'cap'},{jacket:0x2a9d4a,pants:0x23283d,skin:0xd9a37a,hair:'curly'}];
 const WALK=[7.2,6.3,7.9],HPMAX=[100,130,80],WORDER=['pistol','smg','shotgun'];
-const pl={x:-288,z:240,th:Math.PI,vx:0,vz:0,steer:0,lean:0,ch:0,kind:'veer',mesh:null,half:2.2,c:SPEC.veer.c,mass:1,speed:0,skid:0,P:VEH.veer.phys,cam:[8.5,3.8],bike:false,foot:false};
+const pl={x:-288,z:240,th:Math.PI,vx:0,vz:0,steer:0,lean:0,ch:0,kind:'aditya',mesh:null,half:2.2,c:SPEC.aditya.c,mass:1,speed:0,skid:0,P:VEH.aditya.phys,cam:[8.5,3.8],bike:false,foot:false};
 const fp={x:0,z:0,th:0,vx:0,vz:0,mesh:null,walk:0,aim:null,shootT:0,flashT:0,half:.5};
 const hero={hp:100,max:100,weapons:{pistol:true,smg:false,shotgun:false},ammo:{pistol:30,smg:0,shotgun:0},cur:'pistol',hurtT:0};
 const parked=[];traffic.obst=parked;
@@ -273,9 +273,9 @@ function applyStep(){const d=M.def,s=d.steps[M.step];marker.visible=!s.kill;mark
   if(s.kill){M.k={spawned:0,killed:0};spawnWave(s,4);toast('Rival gang aa gayi! SHOOT dabao 🔫',2800,'bad')}}
 function spawnWave(s,n){const k=M.k;n=Math.min(n,s.kill-k.spawned);for(let i=0;i<n;i++){const a=Math.random()*6.28,r=18+Math.random()*10,e=combat.spawn(s.x+Math.cos(a)*r,s.z+Math.sin(a)*r,{aggro:70});pushCircle(colliders,e,.6)}k.spawned+=n}
 function stepDone(){const d=M.def,s=d.steps[M.step];
-  if(s.pick){sfx.pickup();toast(d.id==='m1'?'Bunty gaadi mein baith gaya! ✔':'Parcel mil gaya! ✔',2600,'good');setPerson(0,0,0,0,false)}
+  if(s.pick){sfx.pickup();toast(d.id==='m1'?'Pravin gaadi mein baith gaya! ✔':'Parcel mil gaya! ✔',2600,'good');setPerson(0,0,0,0,false)}
   else if(s.cp){sfx.checkpoint();toast(s.label+' ✔',1400,'good')}
-  else if(s.drop){sfx.pickup();toast((d.id==='m1'?'Bunty ko drop kar diya':'Delivery '+s.drop)+' ✔',2200,'good')}
+  else if(s.drop){sfx.pickup();toast((d.id==='m1'?'Pravin ko drop kar diya':'Delivery '+s.drop)+' ✔',2200,'good')}
   else if(s.kill){sfx.win();toast('Gang bhaag gayi! ✔',2000,'good')}
   else if(d.id==='m5'){sfx.checkpoint();toast('Pahunch gaye! Ab gaadi se EXIT dabao 🚪',3000,'good')}
   M.step++;if(M.step>=d.steps.length){endMission(true)}else{if(d.id==='m2'){M.left+=8}applyStep();
@@ -375,7 +375,7 @@ $('pSwitch').onclick=()=>{sfx.click();const c=(pl.ch+1)%3;setChar(c,pl.kind==='t
 $('pQuit').onclick=()=>{sfx.click();paused=false;marker.visible=false;setPerson(0,0,0,0,false);toTitle()};
 {const mkb=(id,txt,fn)=>{const b=document.createElement('button');b.id=id;b.className='btn sm';b.textContent=txt;b.onclick=fn;$('pause').firstElementChild.insertBefore(b,$('pQuit'));return b};
   mkb('pRoad','🛣 Gaadi sadak pe laao',()=>{sfx.click();snapRoad();pause(false)});
-  mkb('pVeh','🚘 Gaadi',()=>{sfx.click();const O=['veer','bunty','chintu','toro','hblade'];const k=O[(O.indexOf(pl.kind)+1)%O.length];chooseVehicle(k);toast('🚘 '+VEH[k].name,2200,'good');pause(false)});
+  mkb('pVeh','🚘 Gaadi',()=>{sfx.click();const O=['aditya','pravin','deep','toro','hblade'];const k=O[(O.indexOf(pl.kind)+1)%O.length];chooseVehicle(k);toast('🚘 '+VEH[k].name,2200,'good');pause(false)});
   mkb('pGar','🏁 Mafia Garage pe jao',()=>{sfx.click();teleportGarage();pause(false);toast('Mafia Garage: Toro V12 aur Hyper H-Blade yahin khadi hain',3000)})}
 function snapRoad(){if(pl.foot)return;let best=1e9,bx=pl.x,bz=pl.z,bt=pl.th;for(const a of XS){const dx=Math.abs(pl.x-a);if(dx<best){best=dx;bx=a;bz=pl.z;bt=Math.cos(pl.th)>=0?0:Math.PI}const dz=Math.abs(pl.z-a);if(dz<best){best=dz;bz=a;bx=pl.x;bt=Math.sin(pl.th)>=0?Math.PI/2:-Math.PI/2}}
   pl.x=clamp(bx,-290,290);pl.z=clamp(bz,-290,290);pl.th=bt;pl.vx=pl.vz=0;cam.init=false;cam.yaw=bt}
