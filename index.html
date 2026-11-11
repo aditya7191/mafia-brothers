@@ -39,23 +39,25 @@
 
 <div id="hud">
   <div id="look"></div>
+  <button class="rb" id="btnPause" aria-label="Pause"><svg viewBox="0 0 48 48"><rect x="12" y="10" width="8" height="28" rx="2" fill="currentColor"/><rect x="28" y="10" width="8" height="28" rx="2" fill="currentColor"/></svg></button>
   <div id="mapwrap"><canvas id="mini"></canvas><div class="mn">N</div></div>
   <div id="banner"><div id="bnTitle"></div><div id="bnObj"></div><div id="bnRow"><span id="arrow">➤</span><span id="dist"></span><span id="timer"></span></div>
     <div id="chase"><div id="chaseTxt">PAKDE JAANE KA METER</div><div class="bar"><i id="chaseBar"></i></div></div></div>
-  <div id="topr"><div id="wanted"></div><div class="cash" id="hudCash">₹0</div><button class="rb" id="btnMute">🔊</button><button class="rb" id="btnPause">❚❚</button></div>
+  <div id="topr"><div id="wanted"></div><div class="cash" id="hudCash">₹0</div><button class="rb" id="btnMute">🔊</button></div>
   <div id="toast"></div>
   <div id="hpbox"><div class="bar hp"><i id="hpBar"></i></div><span id="hpTxt">100</span></div>
+  <div id="wbox"><div id="wIcon"></div><div id="wAmmo"></div><div id="wName"></div></div>
   <div id="speedo"><div id="wpn"></div><b id="spd">0</b><small id="spdu">km/h</small><div id="who"></div></div>
   <div id="dmg"></div>
   <div id="joy"><div id="joyKnob"></div></div>
-  <div id="fbtns"><div class="pb shoot" id="pShoot">SHOOT<small>AUTO-AIM</small></div><div class="pb swap" id="pSwap">🔫<small>BADLO</small></div></div>
-  <div class="pb exit" id="bExit"><span id="exitI">🚪</span><small id="exitT">EXIT</small></div>
+  <div id="fbtns"><div class="pb shoot" id="pShoot"><svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="12" fill="none" stroke="currentColor" stroke-width="3.5"/><circle cx="24" cy="24" r="3.5" fill="currentColor"/><path d="M24 2v10M24 36v10M2 24h10M36 24h10" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/></svg><small>SHOOT</small></div><div class="pb swap" id="pSwap"><svg viewBox="0 0 64 40"><path d="M6 8h36l4 4h12v8h-14l-3 4-3 10H22l3-14H6z" fill="currentColor"/></svg><small>BADLO</small></div><div class="pb run" id="pRun"><svg viewBox="0 0 48 48"><circle cx="30" cy="9" r="5" fill="currentColor"/><path d="M27 17l-9 6-4 9M27 17l4 9 8 3M22 24l2 10-7 10M24 34l8 4" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg><small>RUN</small></div></div>
+  <div class="pb exit" id="bExit"><span id="exitI"></span><small id="exitT">EXIT</small></div>
   <div id="steer"><div class="arr" id="aL">◀</div><div class="arr" id="aR">▶</div></div>
   <div id="pedals">
-    <div class="pb horn" id="pHorn">📣<small>HORN</small></div>
-    <div class="pb hand" id="pHand">DRIFT<small>HANDBRAKE</small></div>
-    <div class="pb brake" id="pBrake">BRAKE<small>REVERSE</small></div>
-    <div class="pb gas" id="pGas">GAS<small>▲</small></div>
+    <div class="pb horn" id="pHorn"><svg viewBox="0 0 48 48"><path d="M6 18h8l16-9v30l-16-9H6z" fill="currentColor"/><path d="M36 17c4 4 4 10 0 14M40 12c7 7 7 17 0 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/></svg><small>HORN</small></div>
+    <div class="pb hand" id="pHand"><svg viewBox="0 0 48 48"><path d="M10 38c0-14 8-22 24-22M26 8l10 8-10 8" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg><small>DRIFT</small></div>
+    <div class="pb brake" id="pBrake"><svg viewBox="0 0 48 48"><rect x="8" y="14" width="32" height="22" rx="5" fill="currentColor"/><path d="M14 22h20M14 28h20" stroke="#0a1a2a" stroke-width="2.5"/></svg><small>BRAKE</small></div>
+    <div class="pb gas" id="pGas"><svg viewBox="0 0 48 48"><path d="M16 4h16l4 36a3 3 0 0 1-3 4H15a3 3 0 0 1-3-4z" fill="currentColor"/><path d="M18 12h12M18 20h12M18 28h12M17 36h14" stroke="#0a1a2a" stroke-width="2.5"/></svg><small>GAS</small></div>
   </div>
 </div>
 

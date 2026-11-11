@@ -54,6 +54,8 @@ export class Sfx{
   }
   gun(kind,vol=1){const k={pistol:[.34,2200,.09,230],smg:[.22,2600,.06,260],shotgun:[.5,1100,.2,150],enemy:[.2,1800,.08,200]}[kind]||[.3,2000,.08,220];
     this.burst(k[2],k[1],k[0]*vol,'highpass');this.burst(k[2]*1.6,700,k[0]*.8*vol,'lowpass');this.tone(k[3],.13,'square',.22*vol,0,-120)}
+  blaster(){this.tone(78,.5,'sawtooth',.34,0,-34);this.tone(1500,.28,'square',.13,0,-1250);this.tone(430,.6,'sine',.2,.04,900);this.tone(880,.45,'triangle',.12,.1,1100);this.burst(.32,520,.34,'lowpass')}
+  boom(){this.tone(62,.45,'sine',.42,0,-36);this.tone(180,.3,'sawtooth',.14,0,-120);this.burst(.35,380,.3,'lowpass')}
   hurt(){this.tone(140,.18,'sawtooth',.25,0,-60);this.burst(.1,400,.2)}
   dry(){this.tone(900,.04,'square',.1)}
   horn(vol=0.16,pitch=1){this.tone(392*pitch,0.38,'sawtooth',vol);this.tone(494*pitch,0.38,'sawtooth',vol);this.tone(196*pitch,0.38,'square',vol*.5)}
