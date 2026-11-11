@@ -67,6 +67,22 @@ export class Sfx{
   win(){[523,659,784,1047,784,1047,1319].forEach((f,i)=>this.tone(f,0.22,'triangle',0.3,i*0.1)); this.tone(262,0.9,'sine',0.25,0)}
   fail(){[440,392,330,262].forEach((f,i)=>this.tone(f,0.3,'sawtooth',0.2,i*0.17))}
   warn(){this.tone(1000,0.08,'square',0.12)}
+  // ---- home interior sounds (all synthesized)
+  home(on){if(this.mus&&this.ctx)this.mus.gain.setTargetAtTime(on?0.06:(this.musicOn?0.2:0),this.ctx.currentTime,0.2)}
+  door(){this.tone(180,.18,'sawtooth',.14,0,-60);this.burst(.12,500,.2);this.tone(90,.2,'sine',.3,.12,-30)}
+  fizz(){this.burst(.55,6000,.2,'highpass');this.tone(1800,.05,'square',.1)}
+  gulp(){[0,.28,.56].forEach(w=>this.tone(210,.16,'sine',.3,w,-90))}
+  sleepTune(){[523,659,784,659,523,392].forEach((f,i)=>this.tone(f,.5,'sine',.2,i*.32))}
+  tvOn(ch){if(!this.ctx)return;this.tvOff();const c=this.ctx;this.tvN=c.createBufferSource();this.tvN.buffer=this.noise;this.tvN.loop=true;this.tvF=c.createBiquadFilter();this.tvF.type='bandpass';this.tvF.frequency.value=900;this.tvF.Q.value=.6;
+    this.tvG=c.createGain();this.tvG.gain.value=0;this.tvN.connect(this.tvF);this.tvF.connect(this.tvG);this.tvG.connect(this.sfx);this.tvN.start();this.tvSet(ch)}
+  tvSet(ch){if(!this.tvG)return;const t=this.ctx.currentTime;this.tvG.gain.setTargetAtTime(ch===0?.07:ch===1?.012:.02,t,.1);this.tvF.frequency.setTargetAtTime(ch===0?700:1500,t,.1)}
+  tvOff(){if(this.tvN){try{this.tvN.stop()}catch(e){}this.tvN.disconnect();this.tvN=null;this.tvG=null}}
+  tvEvt(k){if(!this.ctx)return;const t=this.ctx.currentTime;
+    if(k==='hit'){this.tone(1500,.04,'square',.12);this.burst(.06,2500,.15)}
+    else if(k==='six'){if(this.tvG){this.tvG.gain.cancelScheduledValues(t);this.tvG.gain.setTargetAtTime(.2,t,.05);this.tvG.gain.setTargetAtTime(.07,t+1.2,.4)}[784,988,1175,1568].forEach((f,i)=>this.tone(f,.18,'triangle',.14,i*.09))}
+    else if(k==='boing'){this.tone(300,.22,'sine',.16,0,500);this.tone(620,.12,'triangle',.1,.16)}
+    else if(k==='beat'){this.tone(70,.14,'sine',.22,0,-30);this.burst(.04,5000,.06,'highpass',.2)}
+    else if(k==='note'){const sc=[523,587,659,784,880];this.tone(sc[Math.floor(Math.random()*5)],.14,'square',.06)}}
   startMusic(){
     const c=this.ctx; this.base=130.81; this.sc=[0,1,4,5,7,8,10];
     this.step=0; this.next=c.currentTime+0.2; this.bpm=104;

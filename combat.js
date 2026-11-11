@@ -97,10 +97,11 @@ export class Combat{
   alive(){return this.enemies.filter(e=>!e.dead).length}
   clear(){for(const e of this.enemies)this.scene.remove(e.mesh);this.enemies.length=0}
   aimTarget(x,z,maxD){let best=null,bd=maxD;for(const e of this.enemies){if(e.dead)continue;const d=Math.hypot(e.x-x,e.z-z);if(d<bd){const dx=(e.x-x)/d,dz=(e.z-z)/d;if(this.wallT(x,z,dx,dz,d)>=d-.6){bd=d;best=e}}}return best}
-  addPickup(type,x,z,ttl){const g=new THREE.Group(),col={pistol:0xffd166,smg:0xff9a3d,shotgun:0xff5d5d,ammo:0xffe27a,health:0xffffff,cash:0x3ddc84}[type];
+  addPickup(type,x,z,ttl){const g=new THREE.Group(),col={pistol:0xffd166,smg:0xff9a3d,shotgun:0xff5d5d,ammo:0xffe27a,health:0xffffff,cash:0x3ddc84,armor:0x4cc9f0}[type];
     if(type==='cash'){pt(g,BM(0x2fbf6a),.8,.14,.45,0,.35,0);pt(g,BM(0x38d77a),.8,.14,.45,.05,.5,.04).rotation.y=.2;pt(g,BM(0xffd24a),.22,.16,.5,0,.64,0);pt(g,BM(0x2fbf6a),.8,.14,.45,-.04,.2,-.03)}
-    else pt(g,MM(type==='health'?0xffffff:0x2a2a33),.9,.55,.9,0,.4,0);
+    else pt(g,MM(type==='health'?0xffffff:type==='armor'?0x1f4e8a:0x2a2a33),.9,.55,.9,0,.4,0);
     if(type==='cash'){}
+    else if(type==='armor'){pt(g,BM(0x4cc9f0),.6,.14,.5,0,.69,0);pt(g,BM(0xffffff),.2,.16,.3,0,.8,0)}
     else if(type==='health'){pt(g,BM(0x22cc55),.7,.12,.2,0,.69,0);pt(g,BM(0x22cc55),.2,.12,.7,0,.69,0)}
     else if(type==='ammo'){pt(g,BM(0xffe27a),.6,.12,.6,0,.69,0);pt(g,MM(0xb88a2a),.2,.35,.2,.2,.9,0)}
     else{pt(g,MM(0x222226),.18,.2,.8,0,.78,0);pt(g,BM(col),.22,.08,.5,0,.9,0)}
